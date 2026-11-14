@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Trading Hub</title>
+<style>
+:root{--bg:#f5f6f8;--sf:#fff;--tx:#1b1f27;--mu:#667085;--bd:#d5d9e0;--ac:#2456d6;--ok:#13804a;--wa:#b36b00;--er:#c0392b;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1218;--sf:#181c25;--tx:#e8ebf1;--mu:#98a2b3;--bd:#2f3748;--ac:#6d93ff;--ok:#3ecf8e;--wa:#f0a93b;--er:#ff6b5b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1218;--sf:#181c25;--tx:#e8ebf1;--mu:#98a2b3;--bd:#2f3748;--ac:#6d93ff;--ok:#3ecf8e;--wa:#f0a93b;--er:#ff6b5b;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:16px}h1{font-size:20px;margin:0}h2{font-size:16px;margin:18px 0 8px}
+small{font-size:.74em;color:var(--mu);font-weight:400}
+.top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.b{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;border:1px solid var(--bd);color:var(--mu)}.b.w{color:var(--wa);border-color:var(--wa)}.b.o{color:var(--ok);border-color:var(--ok)}
+button{font:inherit;cursor:pointer}nav{display:flex;gap:6px;overflow-x:auto;margin:14px 0}
+nav button,.f button{background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:7px 12px;white-space:nowrap}
+nav button.on,.f button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.f{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.c{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px}
+.k{font-size:12px;color:var(--mu)}.big{font-size:34px;font-weight:700}
+.sc{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}th{color:var(--mu);font-weight:500}
+.ok{color:var(--ok)}.er{color:var(--er)}.note{font-size:13px;color:var(--mu)}
+.a{background:var(--ac);color:#fff;border:0;border-radius:7px;padding:7px 12px;margin-right:6px}.a.r{background:transparent;color:var(--er);border:1px solid var(--er)}
+input,select,textarea{font:inherit;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:7px;padding:6px 8px;max-width:100%}
+input[type=number]{width:90px}label.l{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:14px}
+svg{max-width:100%;height:auto;display:block}.row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.row i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+#lg{max-width:360px;margin:60px auto}#lg input{width:100%;margin:6px 0}
+</style></head><body><main>
+<div class="top"><div><h1>🏛️ AI Trading Hub</h1><div class="note">Ufficio del CEO <small>(Amministratore delegato)</small></div></div><div id="st"></div></div>
+<div id="app"></div>
+</main>
+<script>
+var U="https://oersndvhmqijxitanzaa.supabase.co",K="sb_publishable_VeHshe4GQ5r97jvpLoeniQ_QedHVzn_";
+var S=null,TAB=0,CP="60",DF="",DT="",RF="Tutti";
+var $=function(s){return document.querySelector(s)};
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function E(n,s){var t=Math.abs(n).toLocaleString("it-IT",{maximumFractionDigits:0});return (n<0?"− ":(s?"+ ":""))+"€ "+t}
+function ld(){try{return JSON.parse(localStorage.getItem("hs"))}catch(e){return null}}
+function sv(j){S={access_token:j.access_token};try{localStorage.setItem("hs",JSON.stringify({access_token:j.access_token,refresh_token:j.refresh_token}))}catch(e){}}
+async function api(path,o){o=o||{};var h={apikey:K,"Content-Type":"application/json"};if(S&&!o.noauth)h.Authorization="Bearer "+S.access_token;if(o.h)for(var k in o.h)h[k]=o.h[k];
+var r=await fetch(U+path,{method:o.m||"GET",headers:h,body:o.b!==undefined?JSON.stringify(o.b):undefined});
+if(r.status==401&&S&&!o.noauth&&!o.retry&&await refresh())return api(path,Object.assign({},o,{retry:1}));
+var t=await r.text(),j=null;try{j=t?JSON.parse(t):null}catch(e){}
+if(!r.ok)throw new Error((j&&(j.message||j.msg||j.error_description))||("Errore "+r.status));return j}
+async function refresh(){var s=ld();if(!s||!s.refresh_token)return false;try{var j=await api("/auth/v1/token?grant_type=refresh_token",{m:"POST",b:{refresh_token:s.refresh_token},noauth:1});sv(j);return true}catch(e){return false}}
+function exit(){S=null;try{localStorage.removeItem("hs")}catch(e){}showLogin()}
+function showLogin(msg){$("#st").innerHTML="";$("#app").innerHTML='<div class="c" id="lg"><h2>Accesso del CEO</h2><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="a" onclick="doLogin()">Entra</button><div class="er note" id="le">'+esc(msg||"")+'</div></div>'}
+async function doLogin(){try{var j=await api("/auth/v1/token?grant_type=password",{m:"POST",b:{email:$("#em").value.trim(),password:$("#pw").value},noauth:1});sv(j);start()}catch(e){$("#le").textContent="Accesso non riuscito: "+e.message}}
+var TB=[["Panoramica",pan],["Operazioni",ope],["Report",rep],["Avvisi",avv],["Limiti",lim],["Agenti",age],["Impostazioni",imp]];
+function start(){$("#st").innerHTML='<span class="b w">SIMULAZIONE</span> <button class="a r" onclick="exit()">Esci</button>';$("#app").innerHTML='<nav id="nav"></nav><section id="v"></section>';go(0)}
+async function go(i){TAB=i;$("#nav").innerHTML=TB.map(function(t,j){return '<button class="'+(i==j?"on":"")+'" onclick="go('+j+')">'+t[0]+"</button>"}).join("");
+$("#v").innerHTML='<p class="note">Caricamento…</p>';try{$("#v").innerHTML=await TB[i][1]()}catch(e){if(/JWT|401|autorizz/i.test(e.message))return exit();$("#v").innerHTML='<div class="c er">Errore: '+esc(e.message)+"</div>"}}
+async function act(f){try{await f();go(TAB)}catch(e){alert("Non riuscito: "+e.message)}}
+/* panoramica */
+var PK=[["s","Settimana",7],["60","60 giorni",60],["m","Mese",30],["t","Trimestre",90],["h","Semestre",182],["a","Anno",365],["x","Sempre",0],["d","Date"]];
+var COL=["#2456d6","#13a8a8","#8a55d6","#e08a00","#c0392b","#9a7b2f","#6c7a89","#3ecf8e"];
+var AN={equity:"Equity (azioni)",etf:"ETF (fondi quotati)",fondi:"Fondi",crypto:"Crypto (criptovalute)",forex:"Forex (valute)",commodities:"Commodities (materie prime)",macro_indici:"Macro & Indici"};
+function oggi(){return new Date().toISOString().slice(0,10)}
+function rows(an){var o=oggi();if(CP=="d")return an.filter(function(x){return x.data>=(DF||"0")&&x.data<=(DT||o)});if(CP=="x")return an;var n=PK.filter(function(p){return p[0]==CP})[0][2];return an.filter(function(x){return x.data>=new Date(Date.now()-n*864e5).toISOString().slice(0,10)})}
+function chart(an,cap){var d=rows(an);if(d.length<2)return '<p class="note">Servono almeno due giorni di dati per il grafico. Il primo punto si registra con il pulsante qui sotto; poi lo scriverà ogni giorno il report.</p>';
+var v=d.map(function(x){return +x.patrimonio_eur}),t=d.map(function(x){return Date.parse(x.data)}),mn=Math.min.apply(0,v.concat([cap]))-15,mx=Math.max.apply(0,v.concat([cap]))+15,W=600,H=190,t0=t[0],t1=t[t.length-1]||1;
+var X=function(i){return (40+(t[i]-t0)/((t1-t0)||1)*(W-50)).toFixed(1)},Y=function(y){return (H-20-(y-mn)/(mx-mn)*(H-40)).toFixed(1)};
+var pts=v.map(function(y,i){return X(i)+","+Y(y)}).join(" "),df=v[v.length-1]-v[0];
+return '<div class="'+(df>=0?"ok":"er")+'" style="font-weight:600">'+E(df,1)+' ('+(df/v[0]*100).toFixed(2).replace(".",",")+'%) <small>nel periodo scelto</small></div><svg viewBox="0 0 '+W+' '+H+'"><line x1="40" x2="'+(W-10)+'" y1="'+Y(cap)+'" y2="'+Y(cap)+'" stroke="var(--mu)" stroke-dasharray="4 4"/><text x="38" y="'+(+Y(cap)+3)+'" text-anchor="end" font-size="9" fill="var(--mu)">versato</text><polyline points="'+pts+'" fill="none" stroke="var(--ac)" stroke-width="2.4"/><text x="38" y="14" text-anchor="end" font-size="9" fill="var(--mu)">'+E(mx)+'</text><text x="38" y="'+(H-18)+'" text-anchor="end" font-size="9" fill="var(--mu)">'+E(mn)+'</text><text x="40" y="'+(H-4)+'" font-size="9" fill="var(--mu)">'+d[0].data+'</text><text x="'+(W-10)+'" y="'+(H-4)+'" text-anchor="end" font-size="9" fill="var(--mu)">'+d[d.length-1].data+'</text></svg>'}
+function ctl(){return '<div class="f">'+PK.map(function(p){return '<button class="'+(CP==p[0]?"on":"")+'" onclick="CP=\''+p[0]+'\';go(0)">'+p[1]+'</button>'}).join("")+'</div>'+(CP=="d"?'<div class="f"><label class="note">Dal <input type="date" value="'+DF+'" onchange="DF=this.value;go(0)"></label><label class="note">al <input type="date" value="'+DT+'" onchange="DT=this.value;go(0)"></label></div>':"")}
+function don(al,tot){var o=0,C=251.3;return '<svg viewBox="0 0 120 120" style="width:170px;flex:none">'+al.map(function(a,i){var f=a[1]/tot*C,s='<circle cx="60" cy="60" r="40" fill="none" stroke="'+COL[i%8]+'" stroke-width="20" stroke-dasharray="'+f+' '+(C-f)+'" stroke-dashoffset="'+(-o)+'" transform="rotate(-90 60 60)"/>';o+=f;return s}).join("")+'<text x="60" y="58" text-anchor="middle" font-size="9" fill="var(--mu)">totale</text><text x="60" y="71" text-anchor="middle" font-size="11" font-weight="700" fill="var(--tx)">'+E(tot)+'</text></svg>'}
+async function pan(){var r=await Promise.all([api("/rest/v1/portafoglio?select=*"),api("/rest/v1/posizioni?select=*"),api("/rest/v1/andamento?select=*&order=data.asc")]);
+var pf=r[0][0];if(!pf)return '<div class="c">Portafoglio non trovato nel database.</div>';var po=r[1],an=r[2],liq=+pf.liquidita_eur,cap=+pf.capitale_versato_eur;
+var by={};po.forEach(function(x){by[x.area]=(by[x.area]||0)+ +x.valore_eur});var al=Object.keys(by).map(function(k){return [AN[k]||k,by[k]]});al.push(["Liquidità",liq]);
+var tot=al.reduce(function(s,a){return s+a[1]},0),v=tot-cap;window._tot=tot;
+return '<div class="c"><div class="k">Patrimonio totale <small>(valore di tutto l’Hub)</small></div><div class="big">'+E(tot)+'</div><div class="'+(v>=0?"ok":"er")+'" style="font-size:17px;font-weight:600">'+E(v,1)+' ('+(cap?(v/cap*100).toFixed(2).replace(".",","):"0")+'%) <small>rispetto ai '+E(cap)+' versati</small></div></div>'+
+'<div class="c"><b>Andamento del patrimonio</b>'+ctl()+chart(an,cap)+'<button class="a" onclick="act(regp)">Registra il patrimonio di oggi</button></div>'+
+'<div class="c"><b>Dove sono i soldi</b><div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:8px">'+(tot>0?don(al,tot):"")+'<div style="flex:1;min-width:230px">'+al.map(function(a,i){return '<div class="row"><span><i style="background:'+COL[i%8]+'"></i>'+esc(a[0])+'</span><span><b>'+E(a[1])+'</b> · '+(tot?(a[1]/tot*100).toFixed(1).replace(".",","):"0")+'%</span></div>'}).join("")+'</div></div></div>'}
+async function regp(){await api("/rest/v1/andamento",{m:"POST",b:{data:oggi(),patrimonio_eur:Math.round(window._tot*100)/100},h:{Prefer:"resolution=merge-duplicates"}})}
+/* operazioni, report */
+async function ope(){var d=await api("/rest/v1/operazioni?select=*&order=data.desc&limit=100");if(!d.length)return '<div class="c note">Nessuna operazione ancora registrata.</div>';
+return '<h2>Registro operazioni <small>(ogni mossa è motivata e tracciabile)</small></h2><div class="c sc"><table><tr><th>Data</th><th>Tipo</th><th>Strumento</th><th>€</th><th>Motivazione</th><th>Fonte</th><th>CIO</th><th>CRO</th><th>Esecutore</th><th>Risultato</th></tr>'+d.map(function(x){return "<tr><td>"+esc((x.data||"").slice(0,16).replace("T"," "))+"</td><td>"+esc(x.tipo)+"</td><td>"+esc(x.strumento)+"<br><small>"+esc(x.proponente)+"</small></td><td>"+esc(x.importo_eur)+"</td><td>"+esc(x.motivazione)+"</td><td>"+esc(x.fonte)+"</td><td>"+esc(x.decisione_cio)+"</td><td>"+esc(x.decisione_cro)+"</td><td>"+esc(x.esecutore)+"</td><td>"+esc(x.risultato)+"</td></tr>"}).join("")+"</table></div>"}
+var RT=["Tutti","Quotidiano","Settimanale","Mensile","Trimestrale","Quadrimestrale","Annuale"];
+async function rep(){var d=await api("/rest/v1/report?select=*&order=creato_il.desc&limit=200");var x=d.filter(function(r){return RF=="Tutti"||r.tipo==RF});
+return '<h2>Report storici</h2><div class="f">'+RT.map(function(t){return '<button class="'+(RF==t?"on":"")+'" onclick="RF=\''+t+'\';go(2)">'+t+"</button>"}).join("")+'</div>'+(x.length?x.map(function(r){return '<div class="c"><span class="b">'+esc(r.tipo)+'</span> <small>'+esc(r.periodo)+'</small><div><b>'+esc(r.titolo)+'</b></div><div class="note" style="white-space:pre-wrap">'+esc(r.contenuto)+'</div></div>'}).join(""):'<div class="c note">Nessun report di questo tipo.</div>')}
+/* avvisi */
+async function avv(){var d=await api("/rest/v1/avvisi?select=*&order=creato_il.desc&limit=100");if(!d.length)return '<div class="c note">Nessun avviso.</div>';
+return "<h2>Avvisi per il CEO</h2>"+d.map(function(a){return '<div class="c"><span class="b w">'+esc(a.livello)+'</span> <small>'+esc((a.creato_il||"").slice(0,16).replace("T"," "))+' · '+esc(a.stato)+'</small><div><b>'+esc(a.titolo)+'</b></div><div class="note">'+esc(a.dettaglio)+'</div>'+(a.stato=="aperto"?'<p><button class="a" onclick="dec('+a.id+',1)">Approvo</button><button class="a r" onclick="dec('+a.id+',0)">Rifiuto</button></p>':'<div class="note">Decisione: '+esc(a.decisione_ceo)+'</div>')+'</div>'}).join("")}
+function dec(id,ok){var n=prompt("Nota alla tua decisione (facoltativa):","")||"";act(function(){return api("/rest/v1/avvisi?id=eq."+id,{m:"PATCH",b:{stato:ok?"approvato":"rifiutato",decisione_ceo:(ok?"Approvato":"Rifiutato")+(n?": "+n:""),deciso_il:new Date().toISOString()}})})}
+/* limiti */
+var LB={"portafoglio.liquidita_minima_pct":"Liquidità minima (%)","portafoglio.investito_massimo_pct":"Investito massimo (%)","portafoglio.leva_ammessa":"Leva finanziaria ammessa","portafoglio.vendite_allo_scoperto_ammesse":"Vendite allo scoperto ammesse","perdite.max_per_operazione_pct":"Perdita massima per operazione (%)","perdite.max_giornaliera_pct":"Perdita massima in un giorno (%)","perdite.drawdown_massimo_pct":"Calo massimo dal massimo, drawdown (%)","strumento_singolo.tetto_assoluto_pct":"Tetto per singolo strumento (%)","strumento_singolo.moltiplicatore_peso_medio":"Moltiplicatore del peso medio","strumento_singolo.minimo_strumenti_per_investire_tutto":"Strumenti minimi per investire tutto"};
+function flat(o,p,out){for(var k in o){var q=p?p+"."+k:k;if(o[k]!==null&&typeof o[k]=="object")flat(o[k],q,out);else out.push([q,o[k]])}return out}
+function lab(p){if(LB[p])return LB[p];var m=p.split(".");return (AN[m[1]]||m[1])+(m[2]=="obiettivo"?" — obiettivo (%)":" — tetto massimo (%)")}
+async function lim(){var d=await api("/rest/v1/limiti?select=*&order=versione.desc&limit=10");if(!d.length)return '<div class="c">Nessun limite trovato.</div>';var c=d[0];
+return '<h2>Limiti di rischio <small>(versione '+c.versione+')</small></h2><div class="c"><div class="note">Solo tu puoi modificarli. Ogni modifica crea una nuova versione e le vecchie restano nello storico. Il CIO propone, CRO e Controller danno il parere, decidi tu.</div>'+flat(c.contenuto,"",[]).map(function(f){return '<label class="l"><span>'+esc(lab(f[0]))+'</span>'+(typeof f[1]=="boolean"?'<input type="checkbox" data-p="'+f[0]+'"'+(f[1]?" checked":"")+'>':'<input type="number" step="any" data-p="'+f[0]+'" value="'+f[1]+'">')+'</label>'}).join("")+
+'<p><textarea id="nt" rows="2" style="width:100%" placeholder="Motivazione della modifica (obbligatoria)"></textarea></p><button class="a" onclick="saveLim('+c.versione+')">Salva come nuova versione</button><div id="le" class="er note"></div></div>'+
+'<h2>Storico</h2><div class="c sc"><table>'+d.map(function(x){return "<tr><td>v"+x.versione+"</td><td>"+esc((x.creato_il||"").slice(0,16).replace("T"," "))+"</td><td>"+esc(x.decisione_ceo)+"</td></tr>"}).join("")+"</table></div>"}
+function saveLim(v){var o={},err="",n=$("#nt").value.trim();document.querySelectorAll("[data-p]").forEach(function(i){var m=i.dataset.p.split("."),t=o;for(var j=0;j<m.length-1;j++)t=t[m[j]]=t[m[j]]||{};t[m[m.length-1]]=i.type=="checkbox"?i.checked:parseFloat(i.value)});
+var ar=o.aree,so=0;for(var k in ar){so+=ar[k].obiettivo;if(ar[k].obiettivo>ar[k].tetto)err="Per "+(AN[k]||k)+" l’obiettivo supera il tetto."}
+if(Math.abs(so+o.portafoglio.liquidita_minima_pct-100)>0.01)err="Gli obiettivi delle aree più la liquidità minima devono fare 100% (ora "+(so+o.portafoglio.liquidita_minima_pct)+"%).";
+if(Math.abs(o.portafoglio.investito_massimo_pct+o.portafoglio.liquidita_minima_pct-100)>0.01)err="Investito massimo più liquidità minima devono fare 100%.";
+if(!n)err="Scrivi la motivazione della modifica.";if(err){$("#le").textContent=err;return}
+act(function(){return api("/rest/v1/limiti",{m:"POST",b:{versione:v+1,contenuto:o,decisione_ceo:n}})})}
+/* agenti, impostazioni */
+async function age(){var d=await api("/rest/v1/agenti?select=*&order=gruppo.asc,nome.asc");
+return '<h2>Agenti <small>(puoi sospendere o revocare l’autorizzazione operativa)</small></h2><div class="c sc"><table><tr><th>Agente</th><th>Gruppo</th><th>Stato</th><th>Ultima attività</th></tr>'+d.map(function(a){return "<tr><td>"+esc(a.nome)+"</td><td>"+esc(a.gruppo)+'</td><td><select onchange="setAg(\''+encodeURIComponent(a.nome)+'\',this.value)">'+["attivo","sospeso","revocato"].map(function(s){return "<option"+(a.stato==s?" selected":"")+">"+s+"</option>"}).join("")+"</select></td><td>"+esc((a.ultima_attivita||"—").slice(0,16).replace("T"," "))+"</td></tr>"}).join("")+"</table></div>"}
+function setAg(n,s){act(function(){return api("/rest/v1/agenti?nome=eq."+n,{m:"PATCH",b:{stato:s}})})}
+async function imp(){var d=await api("/rest/v1/impostazioni?select=*"),m={};d.forEach(function(x){m[x.chiave]=x.valore});
+return '<h2>Impostazioni</h2><div class="c"><label class="l"><span>Ora del report quotidiano <small>(ora italiana)</small></span><input type="time" id="or" value="'+esc(m.ora_report||"18:00")+'"></label><label class="l"><span>Fase</span><b>'+esc(m.fase||"")+'</b></label><p><button class="a" onclick="saveOra()">Salva l’ora</button></p></div>'}
+function saveOra(){act(function(){return api("/rest/v1/impostazioni?chiave=eq.ora_report",{m:"PATCH",b:{valore:$("#or").value,aggiornato_il:new Date().toISOString()}})})}
+(async function(){if(ld()&&await refresh())start();else showLogin()})();
+</script></body></html>
