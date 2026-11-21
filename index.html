@@ -450,7 +450,9 @@ await api("/rest/v1/documenti",{m:"POST",b:{tipo:"verbale",versione:nv,titolo:"V
 var im={};(await api("/rest/v1/impostazioni?select=*")).forEach(function(x){im[x.chiave]=1});
 if(!im.ora_report)await put("ora_report","18:00");if(!im.giorno_report_settimanale)await put("giorno_report_settimanale","venerdì");if(!im.broker_attivi)await put("broker_attivi",["eToro"]);await put("fase","simulazione");await put("primo_cda",{data:dt,limiti_versione:ver});
 await api("/rest/v1/budget_costi?voce=neq.__",{m:"PATCH",b:{fonte:"Verbale CDA "+dl,aggiornato_il:new Date().toISOString()}}).catch(function(){})})}
-function avviaSim(){if(!confirm("Avviare la simulazione oggi, giorno 0?"))return;act(async function(){await put("data_inizio_simulazione",new Date().toISOString());await put("stato_hub","attivo");await put("fase","simulazione")})}
+function avviaSim(){if(!confirm("Avviare la simulazione oggi, giorno 0? Il punto di partenza sarà il saldo del conto demo che vedi adesso."))return;act(async function(){var b=(await api("/rest/v1/broker_stato?select=*"))[0]||{},d=b.dettaglio||{},eq=+d.equity_eur;if(!eq)throw new Error("Il saldo del broker non è ancora stato letto: attendi la lettura e riprova.");
+await api("/rest/v1/portafoglio?liquidita_eur=not.is.null",{m:"PATCH",b:{capitale_versato_eur:eq}});await api("/rest/v1/benchmark?data=gte.1900-01-01",{m:"DELETE"}).catch(function(){});await api("/rest/v1/andamento?data=gte.1900-01-01",{m:"DELETE"}).catch(function(){});
+await put("capitale_iniziale",{eur:eq,data:oggi(),saldo_broker:b.saldo,valuta:b.valuta});await put("data_inizio_simulazione",new Date().toISOString());await put("stato_hub","attivo");await put("fase","simulazione")})}
 
 (async function(){if(ld()&&await refresh())start();else showLogin()})();
 </script></body></html>
